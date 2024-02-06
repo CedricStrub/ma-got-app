@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import React, { useState } from 'react';
+import { Title } from './components/Title/Title';
+import CharacterDetail from './components/CharacterDetail/CharacterDetail';
+import CharacterList from './components/CharactersList/CharactersList';
+import AddCharacter from './components/AddCharacter/AddCharacter';
+import { characters as initialCharacters } from './assets/charactersData';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [selectedCharId, setSelectedCharId] = useState<number | null>(null);
+  const [characters, setCharacters] = useState(initialCharacters);
+  const selectedCharacter = characters.find(
+    (char) => char.id === selectedCharId,
+  );
+
+  const handleAddCharacter = (character: {
+    titre: string;
+    nom: string;
+    img: string;
+    fam: string;
+  }) => {
+    const newCharacter = {
+      id: characters.length + 1,
+      ...character,
+    };
+    setCharacters([...characters, newCharacter]);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <Title title="Ma GoT App" subtitle="liste des personnages" />
+      <AddCharacter onAdd={handleAddCharacter} />
+      {selectedCharacter && <CharacterDetail character={selectedCharacter} />}
+      <div className="cardContainer">
+        {characters.map((char) => (
+          <CharacterList
+            key={char.id}
+            {...char}
+            onClick={() => setSelectedCharId(char.id)}
+          />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
